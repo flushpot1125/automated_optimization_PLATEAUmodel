@@ -91,6 +91,34 @@ def countTris(obj):
     print(tri_count)
     return tri_count
 
+def decimate_mesh(decimated_tris = 0):
+    for obj in bpy.context.view_layer.objects:
+    
+        if obj.type == 'MESH':
+            # ポリゴン数削減処理を行う
+            apply_modifier_decimate(obj.name,decimate_ratio)
+            # １つ処理し終わったときのstatisticsを表示
+        #  countStatistics()
+         #   decimated_tris+= countTris(obj)
+
+#    print('After Decimated Tris:'+str(decimated_tris))
+
+            #countTris(obj)
+
+def scaling_mesh():
+    for obj in bpy.context.view_layer.objects:
+        if obj.type == 'MESH':
+            obj.scale=100,100,100
+            # 変更後の値をデフォルトとする
+            obj.transform_apply(location=True, rotation=True, scale=True)
+
+
+
+def delete_empty():
+    for item in bpy.context.view_layer.objects:
+        if item.type == 'EMPTY':
+            bpy.data.objects.remove(item)
+
 
 def decimate(obj,limit_num):
     bpy.context.view_layer.objects.active = obj
@@ -109,34 +137,11 @@ def decimate(obj,limit_num):
 joinMesh()
 countStatistics()
 # 2. それぞれのemptyの中にあるmeshをdecimateする
-for obj in bpy.context.view_layer.objects:
-   
-    if obj.type == 'MESH':
-        # もし100倍になっていなかったら100倍に変更する
-        obj.scale=100,100,100
+#decimate_mesh()
 
-        # ポリゴン数削減処理を行う
-        apply_modifier_decimate(obj.name,decimate_ratio)
-        # １つ処理し終わったときのstatisticsを表示
-      #  countStatistics()
-        decimated_tris+= countTris(obj)
+# 3. meshの親オブジェクトになっているemptyを全て削除する
+delete_empty()
 
-        #countTris(obj)
-
-print('After Decimated Tris:'+str(decimated_tris))
-
-#for obj in bpy.data.objects:
-#or obj in bpy.context.view_layer.objects:
-   
-#    if obj.type == 'MESH':
-        # ポリゴン数削減処理を行う
- #       apply_modifier_decimate(obj.name,decimate_ratio)
-        # １つ処理し終わったときのstatisticsを表示
-      #  countStatistics()
- #       decimated_tris+= countTris(obj)
-        #decimated_tris+= 2
-      # 
-     #   countTris(obj)
-#countStatistics()
-#print(decimated_tris)
+# 4. scaleを100に変更してからapplyする
+scaling_mesh()
 
