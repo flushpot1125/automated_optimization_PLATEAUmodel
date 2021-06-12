@@ -14,7 +14,7 @@ decimated_tris = 0
 # https://blenderartists.org/t/getting-triangle-count-from-python/580809 (tris count)
 
 
-# 「ポリゴン数削減」モディファイアの反映
+# 右記のURLで公開されている内容と同一です  :  https://bluebirdofoz.hatenablog.com/entry/2020/01/02/214529
 def apply_modifier_decimate(arg_objectname="Default", arg_ratio=1.0) -> bool:
     """「ポリゴン数削減」モディファイアの反映
     
@@ -76,11 +76,13 @@ def joinMesh():
             print(item.name)
     return 0
 
+# Scene全体のTrisなどを表示する
 def countStatistics():
     view = bpy.context.scene.view_layers['View Layer']
     stats = bpy.context.scene.statistics(view) #returns string
     print(stats)
 
+# 対象オブジェクトのTris数を集計
 def countTris(obj):
     mesh = obj.data
     tri_count = 0
@@ -98,7 +100,7 @@ def decimate_mesh(decimated_tris = 0):
             # ポリゴン数削減処理を行う
             apply_modifier_decimate(obj.name,decimate_ratio)
             # １つ処理し終わったときのstatisticsを表示
-        #  countStatistics()
+
          #   decimated_tris+= countTris(obj)
 
 #    print('After Decimated Tris:'+str(decimated_tris))
@@ -108,10 +110,20 @@ def decimate_mesh(decimated_tris = 0):
 def scaling_mesh():
     for obj in bpy.context.view_layer.objects:
         if obj.type == 'MESH':
-            obj.scale=100,100,100
-            # 変更後の値をデフォルトとする
-            obj.transform_apply(location=True, rotation=True, scale=True)
+            obj.scale=10,10,10
 
+   # bpy.ops.object.select_all(action='SELECT') 
+   # bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    # 全て非選択に戻す
+   # bpy.ops.object.select_all(action='DESELECT') 
+
+def origin_to_geometry():
+    for obj in bpy.context.view_layer.objects:
+        if obj.type == 'MESH':
+            targetob = bpy.data.objects.get(obj.name)
+            bpy.context.view_layer.objects.active = targetob
+            bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
+            bpy.ops.object.select_all(action='DESELECT') 
 
 
 def delete_empty():
@@ -120,28 +132,24 @@ def delete_empty():
             bpy.data.objects.remove(item)
 
 
-def decimate(obj,limit_num):
-    bpy.context.view_layer.objects.active = obj
-    #bpy.ops.object.modifier_add(type='DECIMATE')
-    bpy.ops.object.modifier_add(type='DECIMATE')
-
-    #decim = bpy.context.object.modifiers["Decimate"]
-    decim = bpy.context.view_layer.objects.modifiers["Decimate"]
-    decim.decimate_type = 'DISSOLVE'
-    decim.delimit = {'NORMAL'}
-    decim.angle_limit = limit_num
-
+#メモ
+#実行前に全てを非選択にする処理を追加する
 
 # 実行
+# 0. 全選択状態だとBlenderが落ちることがあるので、全て非選択にする
+bpy.ops.object.select_all(action='DESELECT') 
 # 1. importされたemptyの中にあるmeshを結合する
 joinMesh()
-countStatistics()
+#countStatistics()
 # 2. それぞれのemptyの中にあるmeshをdecimateする
-#decimate_mesh()
+decimate_mesh()
 
-# 3. meshの親オブジェクトになっているemptyを全て削除する
+# 3. それぞれのmeshの座標をorigin to geometoryする
+origin_to_geometry()
+
+# 4. meshの親オブジェクトになっているemptyを全て削除する
 delete_empty()
 
-# 4. scaleを100に変更してからapplyする
+# 5. scaleを10に変更
 scaling_mesh()
 
