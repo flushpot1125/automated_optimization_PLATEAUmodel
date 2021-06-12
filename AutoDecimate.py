@@ -120,6 +120,7 @@ def scaling_mesh():
 def origin_to_geometry():
     for obj in bpy.context.view_layer.objects:
         if obj.type == 'MESH':
+            bpy.ops.object.mode_set(mode='OBJECT')
             targetob = bpy.data.objects.get(obj.name)
             bpy.context.view_layer.objects.active = targetob
             bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
