@@ -1,7 +1,7 @@
 import bpy
 
 # 削減比率の指定
-decimate_ratio = 0.6
+decimate_ratio = 0.8
 
 # 削減後のTris値
 decimated_tris = 0
@@ -12,7 +12,7 @@ decimated_tris = 0
 # https://bluebirdofoz.hatenablog.com/entry/2020/01/05/112942 (object.join)
 # https://blenderartists.org/t/newbie-question-about-statistics/1291515/2
 # https://blenderartists.org/t/getting-triangle-count-from-python/580809 (tris count)
-
+# https://blenderartists.org/t/setting-origin-to-multiple-objects-via-script/1128140/6 (origin to geometory)
 
 # 右記のURLで公開されている内容と同一です  :  https://bluebirdofoz.hatenablog.com/entry/2020/01/02/214529
 def apply_modifier_decimate(arg_objectname="Default", arg_ratio=1.0) -> bool:
@@ -111,20 +111,12 @@ def scaling_mesh():
     for obj in bpy.context.view_layer.objects:
         if obj.type == 'MESH':
             obj.scale=10,10,10
-
-   # bpy.ops.object.select_all(action='SELECT') 
-   # bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    # 全て非選択に戻す
-   # bpy.ops.object.select_all(action='DESELECT') 
+            obj.location= obj.location.x*10,obj.location.y*10,obj.location.z*10
 
 def origin_to_geometry():
-    for obj in bpy.context.view_layer.objects:
-        if obj.type == 'MESH':
-            bpy.ops.object.mode_set(mode='OBJECT')
-            targetob = bpy.data.objects.get(obj.name)
-            bpy.context.view_layer.objects.active = targetob
-            bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
-            bpy.ops.object.select_all(action='DESELECT') 
+    bpy.ops.object.select_all(action='SELECT') 
+    bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
+    bpy.ops.object.select_all(action='DESELECT') 
 
 
 def delete_empty():
@@ -132,6 +124,11 @@ def delete_empty():
         if item.type == 'EMPTY':
             bpy.data.objects.remove(item)
 
+# 高さを0にする。walkthroughに限定するならあった方が良い。ただし、実際の建物の建っている高さは変わってしまう
+def alignment_position():
+    for obj in bpy.context.view_layer.objects:
+        if obj.type == 'MESH':
+            obj.location.z=0
 
 #メモ
 #実行前に全てを非選択にする処理を追加する
@@ -141,12 +138,6 @@ def delete_empty():
 bpy.ops.object.select_all(action='DESELECT') 
 # 1. importされたemptyの中にあるmeshを結合する
 joinMesh()
-#countStatistics()
-# 2. それぞれのemptyの中にあるmeshをdecimateする
-decimate_mesh()
-
-# 3. それぞれのmeshの座標をorigin to geometoryする
-origin_to_geometry()
 
 # 4. meshの親オブジェクトになっているemptyを全て削除する
 delete_empty()
@@ -154,3 +145,16 @@ delete_empty()
 # 5. scaleを10に変更
 scaling_mesh()
 
+# 3. それぞれのmeshの座標をorigin to geometoryする
+origin_to_geometry()
+
+#countStatistics()
+# 2. それぞれのemptyの中にあるmeshをdecimateする
+decimate_mesh()
+
+# zを0にする。
+alignment_position()
+
+
+
+print("finished")
