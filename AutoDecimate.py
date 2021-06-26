@@ -130,7 +130,11 @@ def alignment_position():
         if obj.type == 'MESH':
             obj.location.z=0
 
-
+# 確認中のためコメントアウト
+#def check_all_area_of_mesh():
+#     for obj in bpy.context.view_layer.objects:
+#        if obj.type == 'MESH':
+#            obj.position.x
 
 #メモ
 #実行前に全てを非選択にする処理を追加する
@@ -142,7 +146,8 @@ bpy.ops.object.select_all(action='DESELECT')
 joinMesh()
 
 # 4. meshの親オブジェクトになっているemptyを全て削除する
-delete_empty()
+# emptyを削除するとメッシュが崩れてしまうため、いったんコメントアウトしておく
+#delete_empty()
 
 # 5. scaleを10に変更
 scaling_mesh()
