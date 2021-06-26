@@ -130,6 +130,8 @@ def alignment_position():
         if obj.type == 'MESH':
             obj.location.z=0
 
+
+
 #メモ
 #実行前に全てを非選択にする処理を追加する
 
