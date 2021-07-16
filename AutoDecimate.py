@@ -7,11 +7,7 @@ decimate_ratio = 0.8
 # 削減後のTris値
 decimated_tris = 0
 
-# それぞれの建物メッシュの原点からの距離を計算した結果を格納する
-distance_lists =[]
 
-# 各メッシュのx,y座標
-pos_lists =[]
 
 
 # Thanks for these great site!
@@ -139,11 +135,20 @@ def alignment_position():
             obj.location.z=0
 
 def correct_all_distance_of_mesh():
+    # それぞれの建物メッシュの原点からの距離を計算した結果を格納する
+    distance_lists =[]
+
+    # 各メッシュのx,y座標
+    pos_lists =[]
+
     for obj in bpy.context.view_layer.objects:
         if obj.type == 'MESH':
-            pos_lists = pos_lists + [obj.position.x,obj.position.y]
-            distance = obj.position.x ** obj.position.x + obj.position.y ** obj.position.y
-            distance_lists = distance_lists + math.sqrt(distance)
+            pos_lists.append([obj.location.x,obj.location.y])
+            #pos_lists = pos_lists + [obj.location.x,obj.location.y]
+            distance = obj.location.x ** obj.location.x + obj.location.y ** obj.location.y
+            #print(obj.location.x)
+            #distance_lists = distance_lists + math.sqrt(distance)
+            distance_lists.append(math.sqrt(distance))
             
     # 最も原点からの距離が遠いobjの要素番号を抽出
     max_distance_index = distance_lists.index(max(distance_lists))
@@ -151,8 +156,9 @@ def correct_all_distance_of_mesh():
     for obj in bpy.context.view_layer.objects:    
         # 最も原点からの距離が遠いobjのxとyの座標分だけ、引き算する。これで原点に近づける
         if obj.type == 'MESH':
-            obj.position.x = obj.position.x - pos_lists[max_distance_index][0]
-            obj.position.y = obj.position.y - pos_lists[max_distance_index][1]
+            print(pos_lists[max_distance_index][0])
+            obj.location.x = obj.location.x - pos_lists[max_distance_index][0]
+            obj.location.y = obj.location.y - pos_lists[max_distance_index][1]
 
 
 #メモ
