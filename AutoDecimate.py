@@ -1,10 +1,14 @@
 import bpy
+import math
 
 # 削減比率の指定
 decimate_ratio = 0.8
 
 # 削減後のTris値
 decimated_tris = 0
+
+
+
 
 # Thanks for these great site!
 # https://bluebirdofoz.hatenablog.com/entry/2020/01/02/214529
@@ -130,14 +134,32 @@ def alignment_position():
         if obj.type == 'MESH':
             obj.location.z=0
 
-# 確認中のためコメントアウト
-#def check_all_area_of_mesh():
-#     for obj in bpy.context.view_layer.objects:
-#        if obj.type == 'MESH':
-#            obj.position.x
+def correct_all_distance_of_mesh():
+    # それぞれの建物メッシュの原点からの距離を計算した結果を格納する
+    distance_lists =[]
 
-#メモ
-#実行前に全てを非選択にする処理を追加する
+    # 各メッシュのx,y座標
+    pos_lists =[]
+
+    for obj in bpy.context.view_layer.objects:
+        if obj.type == 'MESH':
+            pos_lists.append([obj.location.x,obj.location.y])
+            #pos_lists = pos_lists + [obj.location.x,obj.location.y]
+            distance = obj.location.x * obj.location.x + obj.location.y * obj.location.y
+            #print(distance)
+            distance_lists.append(math.sqrt(distance)) 
+            
+    # 最も原点からの距離が遠いobjの要素番号を抽出
+    max_distance_index = distance_lists.index(max(distance_lists))
+
+    for obj in bpy.context.view_layer.objects:    
+        # 最も原点からの距離が遠いobjのxとyの座標分だけ、引き算する。これで原点に近づける
+        if obj.type == 'MESH':
+            #print(pos_lists[max_distance_index][0])
+            obj.location.x = obj.location.x - pos_lists[max_distance_index][0]
+            obj.location.y = obj.location.y - pos_lists[max_distance_index][1]
+
+
 
 # 実行
 # 0. 全選択状態だとBlenderが落ちることがあるので、全て非選択にする
@@ -145,23 +167,26 @@ bpy.ops.object.select_all(action='DESELECT')
 # 1. importされたemptyの中にあるmeshを結合する
 joinMesh()
 
-# 4. meshの親オブジェクトになっているemptyを全て削除する
-# emptyを削除するとメッシュが崩れてしまうため、いったんコメントアウトしておく
+# 1. meshの親オブジェクトになっているemptyを全て削除する
+# 追記：emptyを削除するとメッシュが崩れてしまうため、いったんコメントアウトしておく
 #delete_empty()
 
-# 5. scaleを10に変更
-scaling_mesh()
+# 2. scaleを10に変更
+## three.jsとbabylon.jsの場合、実行不要
+#scaling_mesh()
 
 # 3. それぞれのmeshの座標をorigin to geometoryする
 origin_to_geometry()
 
 #countStatistics()
-# 2. それぞれのemptyの中にあるmeshをdecimateする
+# 4. それぞれのemptyの中にあるmeshをdecimateする
 decimate_mesh()
 
 # zを0にする。
-alignment_position()
+#alignment_position()
 
+# 5. 原点から最も遠いオブジェクトのxとy座標の値で引き算し、全オブジェクトを原点に近づける. こうしないとUnity以外の手段でオブジェクトの位置を確認できないため
+correct_all_distance_of_mesh()
 
 
 print("finished")
