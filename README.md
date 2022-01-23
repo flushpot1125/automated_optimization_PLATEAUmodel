@@ -7,8 +7,18 @@
 
 PLATEAUの3DCGモデルはメッシュ数やファイル数が多く、そのまま使うとVR、WebXRなどでの使用が困難です。  
 
-このスクリプトはBlenderで読み込んだPLATEAUモデルについて、メッシュ結合とdecimate処理によるポリゴン数削減、origin to geometoryによる原点調整を自動実行します。
+このスクリプトはBlenderで読み込んだPLATEAUモデルについて、メッシュ結合とdecimate処理によるポリゴン数削減、origin to geometoryによる原点調整を自動実行します。  
 
+---  
+
+2022/1/23追記
+
+このリポジトリのPythonスクリプトはfbx提供の東京都23区を前提としています。しかし、fbxで提供されているのは2022/1/23時点では東京都23区のみです。23区以外の都市データでは本スクリプトは意図した動作をしません。他の形式でも使用できる形式へは日程未定ですが対応予定です。  
+
+参考：  
+[Project PLATEAUで配布されている都市の3DCGデータ](https://www.mlit.go.jp/plateau/opendata/)
+
+---  
 # 動作確認環境
 
 Blender 2.93.0 
